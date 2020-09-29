@@ -54,6 +54,8 @@ int utn_getEntero(int* pEntero, int retry, char* msg, char*msgError, int min, in
 int normalizeStr(char* str);
 int addEmployee(eEmployee list[], int tam, int id, char nombre[], char apellido[], float salario, int sector, int index);
 void menuSectores();
+int findEmployeeById(eEmployee list[], int tam, int id);
+int menuModificar(eEmployee *list,int tam ,eSector* sector,int tamsec);
 
 
 int main(void) {
@@ -112,7 +114,7 @@ int main(void) {
 		case 2:
 				if (flagOp1==1)
 				{
-
+					menuModificar(list,TAM,sectores,TAMSEC);
 
 				}else
 					{
@@ -215,12 +217,14 @@ int get_sector(eSector* list,int tamsec,int id,char* desc)
 
 void menuSectores()
 	{
+
 	 	printf("***** Menu sectores *****\n\n");
 	    printf("1. RRHH\n");
 	    printf("2. Sistemas\n");
 	    printf("3. Legales\n");
 	    printf("4. Ventas\n");
 	    printf("5. Compras\n\n");
+
 
 	}
 
@@ -278,6 +282,7 @@ int get_Data(eEmployee list[], int tam, int* nextId, char nombre[], char apellid
 			utn_getFlotante(salario, 3, "Ingrese salario:\n ", "ERROR,El salario ingresado no es valido.\n", 20000.00, 500000.00);
 			menuSectores();
 			utn_getEntero(sector, 3, "Ingrese sector: \n", "ERROR,El sector ingresado no es valido.\n", 1, 5);
+
 
 			*nextId = newId;
 			isOk = 0;
@@ -550,3 +555,111 @@ int addEmployee(eEmployee list[], int tam, int id, char nombre[], char apellido[
 	}
 	return isOk;
 }
+
+
+int findEmployeeById(eEmployee list[], int tam, int id)
+{
+	int exists = -1;
+
+	if(list != NULL && tam > 0)
+	{
+		for(int i = 0; i < tam; i++)
+		{
+			if(id == list[i].id)
+			{
+				exists = i; //devuelve el legajo cargado
+				break;
+			}
+		}
+	}
+	return exists;
+}
+
+int menuModificar(eEmployee *list,int tam ,eSector* sector,int tamsec)
+{
+	int isOk = -1;
+	int auxId;
+	int opcion;
+	char confirm;
+	char continueM;
+	int index;
+	char newName[51];
+	char newLastname[51];
+	float newSalary;
+	int newSector;
+
+	system("cls");
+	printf("*****Menu  Modificaciones *****\n\n");
+
+	showEmployeeS(list,sector,tam,tamsec);
+	if(list != NULL && tam > 0 && utn_getEntero(&auxId, 3, "Ingrese ID de la persona a modificar: \n", "Error. No existe ID.\n", 1000, 2000) == 0 )
+	{
+		index = findEmployeeById(list, tam, auxId); //encuentra al empleado a modificar
+
+		if(index == -1)
+		{
+			printf("No existe ese ID en el sistema.\n");
+		}
+		else
+		{
+			printf("El ID %d pertenece al siguiente empleado:\n", auxId);
+			printf(" ID       Nombre       Apellido    Salario       Sector\n\n");
+			showEmployee(list[index], sector, tamsec);
+			utn_getCadena(&confirm, 2, 3, "Desea modificarla? s/n: ", "Error. No es una opcion valida.");
+
+			if(confirm == 's')
+			{
+				do
+				{
+					printf("    1. Modificar nombre\n");
+					printf("    2. Modificar apellido\n");
+					printf("    3. Modificar salario\n");
+					printf("    4. Modificar sector\n\n");
+					utn_getEntero(&opcion, 3, "Ingrese opcion a modificar:\n ", "ERROR, no es una opcion valida\n", 1, 4);
+
+					switch(opcion)
+					{
+						case 1:
+							utn_getCadena(newName, 51, 5, "Ingrese nombre nuevo : \n", "ERROR, nombre invalido.\n");
+							normalizeStr(newName);
+							strcpy(list[index].name, newName);
+							break;
+						case 2:
+							utn_getCadena(newLastname, 51, 5, "Ingrese nuevo apellido: \n", "ERROR, apellido invalido.\n");
+							normalizeStr(newName);
+							strcpy(list[index].lastName, newLastname);
+							break;
+						case 3:
+							utn_getFlotante(&newSalary, 5, "Ingrese nuevo salario:\n", "ERROR, salario invalido.\n", 12000, 300000);
+							list[index].salary = newSalary;
+							break;
+						case 4:
+							utn_getEntero(&newSector, 5, "Ingrese nuevo sector: \n", "ERROR, sector invalido.\n", 1, 5);
+							list[index].idSector = newSector;
+							break;
+						default:
+							printf("No es una opcion valida.\n\n");
+					}
+					printf("Modificacion realizada con exito. \n");
+					printf("ID         Nombre     Apellido    Salario        Sector\n");
+					showEmployee(list[index], sector, tamsec);//muestro el empleado modificado
+					printf("Desea seguir modificando? s/n: ");
+					fflush(stdin);
+					scanf("%c", &confirm);
+					if(confirm == 's')
+					{
+						continueM = 'n';
+					}
+				}while(continueM == 's');
+			}
+			else if(confirm == 'n')
+			{
+				printf("No se generaron modificaciones.\n");
+			}
+		}
+		isOk = 0;
+	}
+	return isOk;
+}
+
+
