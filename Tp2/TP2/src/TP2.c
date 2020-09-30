@@ -60,8 +60,8 @@ int removeEmployee(eEmployee*list, int tam, int id, eSector* sectors, int tamsec
 int informes(eEmployee list[], int tam, eSector sector[], int tamsec);
 int totalAndPromedySalaries(eEmployee* list, int tam);
 int menuInform();
-int sortEmployees(eEmployee* list, int len, int order);
-int sortEmployees(eEmployee* list, int len, int order);
+int sortEmployees(eEmployee* list, int tam, int order);
+int sortEmployees(eEmployee* list, int tam, int order);
 
 int main(void) {
 	setbuf(stdout,NULL);
