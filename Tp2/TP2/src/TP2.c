@@ -38,7 +38,7 @@ typedef struct{
 int menuABM();
 int initEmployees(eEmployee list[], int tam);
 void showEmployee(eEmployee x ,eSector* list,int tamsec);
-void showEmployeeS(eEmployee* list ,eSector* listSec,int tam,int tamsec);
+void showEmployeeS(eEmployee* list ,eSector listSec[],int tam,int tamsec);
 int get_sector(eSector* list,int tamsec,int id,char* desc);
 int lookEmpty( eEmployee* list,int tam);
 int get_Data(eEmployee list[], int tam, int* nextId, char nombre[], char apellido[], float* salario, int* sector, int* index);
@@ -56,12 +56,17 @@ int addEmployee(eEmployee list[], int tam, int id, char nombre[], char apellido[
 void menuSectores();
 int findEmployeeById(eEmployee list[], int tam, int id);
 int menuModificar(eEmployee *list,int tam ,eSector* sector,int tamsec);
-
+int removeEmployee(eEmployee*list, int tam, int id, eSector* sectors, int tamsec);
+int informes(eEmployee list[], int tam, eSector sector[], int tamsec);
+int totalAndPromedySalaries(eEmployee* list, int tam);
+int menuInform();
+int sortEmployees(eEmployee* list, int len, int order);
+int sortEmployees(eEmployee* list, int len, int order);
 
 int main(void) {
 	setbuf(stdout,NULL);
 
-	int opcion;
+
 	char salir;
 	int nextId = 999;
 	int i=0;
@@ -73,6 +78,7 @@ int main(void) {
 	float auxSalary;
 	int auxSector;
 	int flagOp1=0;
+	int auxId;
 
 	eSector sectores[TAMSEC]=
 	    {
@@ -101,7 +107,7 @@ int main(void) {
 				i++;
 				if(get_Data(list, TAM, &nextId, auxName, auxLastname, &auxSalary, &auxSector, &index)==0 && addEmployee(list, TAM, nextId, auxName, auxLastname, auxSalary, auxSector, index) == 0)
 					{
-						flagOp1 = 1; //modifico el flag si las dos funciones retornaron 0
+						flagOp1 = 1;
 					}
 
 			}while(i < cantidad);
@@ -125,8 +131,44 @@ int main(void) {
 
 
 		case 3:
+			if(flagOp1 == 1)
+							{
+								printf("\n***** Menu Bajas *****\n\n ");
+								do
+								{
+									showEmployeeS(list, sectores, TAM, TAMSEC);
+									if(utn_getEntero(&auxId, 3, "Ingrese ID del empleado a eliminar: \n", "Error, no es un numero de ID.\n", 1000, 2000) == 0)
+									{
+										removeEmployee(list, TAM, auxId, sectores, TAMSEC);
+									}
+									printf("Desea continuar eliminando? s/n: ");
+									fflush(stdin);
+									scanf("%c", &salir);
+
+								}while(salir == 'n');
+							}
+							else
+							{
+								printf("Primero debe cargar empleados.\n");
+							}
+
+							break;
 			break;
+
+
+
 		case 4:
+			if(flagOp1 == 1)
+							{
+								informes(list, TAM, sectores, TAMSEC);
+							}
+							else
+							{
+								printf("Primero debe cargar empleados.\n");
+							}
+							break;
+
+
 			break;
 		case 5:
 			system("cls");
@@ -134,10 +176,7 @@ int main(void) {
 			printf("Segur@ desea salir? s/n: \n");
 			fflush(stdin);
 		    scanf("%c", &salir);
-			if(salir == 's')
-				{
-					opcion = 's';
-				}
+
 			break;
 		default:
 			system("cls");
@@ -148,7 +187,7 @@ int main(void) {
 
 		system("pause");
 
-	}while(opcion!='s');
+	}while(salir!='s');
 
 
 
@@ -338,7 +377,7 @@ int getCadena(char* pAux, int limite)
         if(strlen(auxString)<= limite)
         {
             strncpy(pAux, auxString, limite);
-            isOk=0; //exito
+            isOk=0; //ok
         }
     }
 
@@ -380,7 +419,7 @@ int utn_getFlotante(float* pFloat, int retry, char* msg, char*msgError, float mi
             if(getFloat(&auxFloat) == 0 && auxFloat >= min && auxFloat <= max)
             {
                 *pFloat= auxFloat;
-                todoOK = 0; //exito
+                todoOK = 0; //ok
                 break;
             }
             else
@@ -403,7 +442,7 @@ int getFloat(float*pAux)
     if(getCadena(auxString,200) == 0 && isFloat(auxString) == 0)
     {
         *pAux = atof(auxString); //to float
-        todoOK = 0; //exito
+        todoOK = 0; //ok
     }
     return todoOK;
 }
@@ -438,7 +477,7 @@ int isFloat(char* pAux)
 
     if(i == stringLong)
     {
-    	todoOk = 0; //exito
+    	todoOk = 0; //ok
     }
     return todoOk;
 }
@@ -459,7 +498,7 @@ int utn_getEntero(int* pEntero, int retry, char* msg, char*msgError, int min, in
             if(getInt(&auxInt) == 0 && auxInt >= min && auxInt <= max)
             {
                 *pEntero = auxInt;
-                isOk = 0; //exito
+                isOk = 0;
                 break;
             }
             else
@@ -480,7 +519,7 @@ int getInt(int* pAux)
     if(getCadena(auxString, sizeof(auxString)) == 0 && isInt(auxString ) == 0)
     {
         *pAux = atoi(auxString); //to integer
-        isOk = 0; //exito
+        isOk = 0;
     }
     return isOk;
 }
@@ -505,7 +544,7 @@ int isInt(char *pAux)
 
     if(i == stringLong)
     {
-        isOk = 0; //exito
+        isOk = 0;
     }
 
     return isOk;
@@ -527,7 +566,7 @@ int normalizeStr(char* str)
 			if(str[i] == ' ')
 			{
 				str[i + 1] = toupper(str[i + 1]);
-				isOk = 0; //exito
+				isOk = 0;
 			}
 			i++;
 		}
@@ -567,7 +606,7 @@ int findEmployeeById(eEmployee list[], int tam, int id)
 		{
 			if(id == list[i].id)
 			{
-				exists = i; //devuelve el legajo cargado
+				exists = i; //devuelve el legajo
 				break;
 			}
 		}
@@ -594,7 +633,7 @@ int menuModificar(eEmployee *list,int tam ,eSector* sector,int tamsec)
 	showEmployeeS(list,sector,tam,tamsec);
 	if(list != NULL && tam > 0 && utn_getEntero(&auxId, 3, "Ingrese ID de la persona a modificar: \n", "Error. No existe ID.\n", 1000, 2000) == 0 )
 	{
-		index = findEmployeeById(list, tam, auxId); //encuentra al empleado a modificar
+		index = findEmployeeById(list, tam, auxId); //encuentra al empleado
 
 		if(index == -1)
 		{
@@ -642,7 +681,7 @@ int menuModificar(eEmployee *list,int tam ,eSector* sector,int tamsec)
 					}
 					printf("Modificacion realizada con exito. \n");
 					printf("ID         Nombre     Apellido    Salario        Sector\n");
-					showEmployee(list[index], sector, tamsec);//muestro el empleado modificado
+					showEmployee(list[index], sector, tamsec);//muestro el empleado
 					printf("Desea seguir modificando? s/n: ");
 					fflush(stdin);
 					scanf("%c", &confirm);
@@ -661,5 +700,210 @@ int menuModificar(eEmployee *list,int tam ,eSector* sector,int tamsec)
 	}
 	return isOk;
 }
+
+
+
+int removeEmployee(eEmployee*list, int tam, int id, eSector* sectors, int tamsec)
+{
+	int index;
+	char confirm;
+	int todoOK = -1;
+
+	if(list != NULL && tam > 0)
+	{
+		index = findEmployeeById(list, tam, id);
+
+		if(index < 0)
+		{
+			printf("ERROR. El id ingresado no existe.\n");
+		}
+		else
+		{
+			printf("El id %d corresponde al empleado: \n", id);
+			showEmployee(list[index], sectors, tamsec);
+			printf("Esta seguro de que desea eliminarlo? s/n: ");
+			fflush(stdin);
+			scanf("%c", &confirm);
+
+			if(confirm == 's')
+			{
+				printf("El empleado ha sido eliminado.\n");
+				list[index].isEmpty = 1;
+				todoOK = 0;
+			}
+			else if (confirm == 'n')
+			{
+				printf("No se realizaron cambios.\n");
+				todoOK = 0;
+			}
+			else
+			{
+				printf("La opcion ingresada no es valida.\n");
+			}
+		}
+	}
+
+	return todoOK;
+}
+
+
+int menuInform()
+{
+	int opcion;
+
+	system("cls");
+	printf("\n***** Menu Informes *****\n\n");
+
+	printf("1. Listar empleados ordenados alfabeticamente por Apellido y agrupados por Sector\n");
+	printf("2. Total y promedio de los salarios\n");
+	printf("3. Salir\n\n");
+
+	utn_getEntero(&opcion, 300, "Ingrese la opcion elegida:\n ", "Error, no es una opcion valida.\n", 1, 3);
+
+	return opcion;
+}
+
+int informes(eEmployee* list, int tam, eSector *sector, int tamsec)
+{
+	int isOk = -1;
+	char continueI = 's';
+	char confirm;
+	int ascDes;
+
+	if(list != NULL && sector != NULL)
+	{
+
+		do
+		{
+			switch(menuInform()) //retorna la opcion
+			{
+				case 1:
+					utn_getEntero(&ascDes, 300, "Ingrese 1 para listar de manera ascendente o 0 para descendente: \n", "Error. No es un ordenamiento posible.\n", 0, 1);
+					printf("\n");
+					sortEmployees(list, tam, ascDes);
+					showEmployeeS(list,sector,  tam, tamsec);
+					system("pause");
+					isOk = 0;
+					break;
+				case 2:
+					 totalAndPromedySalaries(list, tam);
+					isOk = 0;
+					break;
+				case 3:
+					printf("Confirma salida? s/n: ");
+					fflush(stdin);
+					scanf("%c", &confirm);
+					if(confirm == 's')
+					{
+						continueI = 'n';
+					}
+					isOk = 0;
+					break;
+				default:
+					printf("No es una opcionn valida.\n\n");
+			}
+		}while(continueI == 's');
+	}
+	return isOk;
+}
+
+int sortEmployees(eEmployee* list, int tam, int order)
+{
+	//agrupar por sector y ordenar por apellido
+	int isOk = -1;
+	eEmployee auxEmployee;
+
+	if(list != NULL)
+	{
+		for(int i = 0; i < tam -1; i++)
+		{
+			for(int j = i + 1; j < tam; j ++)
+			{
+				isOk = 0;
+
+				if(list[i].isEmpty == 0 && list[j].isEmpty == 0) //solo hace el burbujeo si no estan vacias las posiciones
+				{
+
+					switch(order)
+					{
+						case 0:
+							if(list[i].idSector < list[j].idSector || (list[i].idSector == list[j].idSector && (strcmp(list[i].lastName, list[j].lastName)) < 0)) //de mayor a menor sector (agrupa) y apellido (ordena)
+							{
+								auxEmployee = list[i];
+								list[i] = list[j];
+								list[j] = auxEmployee;
+							}
+							break;
+						case 1:
+							if(list[i].idSector > list[j].idSector || (list[i].idSector == list[j].idSector && (strcmp(list[i].lastName, list[j].lastName)) > 0)) //de menor a mayor sector (agrupa) y apellido (ordena)
+							{
+								auxEmployee = list[i];
+								list[i] = list[j];
+								list[j] = auxEmployee;
+							}
+							break;
+						default:
+							printf("No es un orden valido.\n");
+					}
+				}
+			}
+		}
+	}
+	return isOk;
+}
+
+int totalAndPromedySalaries(eEmployee* list, int tam)
+{
+	int isOk = -1;
+	float accumSalaries = 0;
+	int countEmployees = 0;
+	float promedy;
+	int countEmployeesHigher = 0;
+
+	if(list != NULL && tam > 0)
+	{
+		for(int i = 0; i < tam; i++)
+		{
+			if(list[i].isEmpty == 0)
+			{
+				accumSalaries += list[i].salary;
+				countEmployees++;
+			}
+		}
+
+		promedy = (float) accumSalaries / countEmployees;
+
+		for(int i = 0; i < tam; i++)
+		{
+			if(list[i].isEmpty == 0 && list[i].salary > promedy)
+			{
+				countEmployeesHigher++;
+			}
+
+		}
+		isOk = 0;
+
+		printf("El total de los salarios de los %d empleados en sistema es de: $ %.2f\n", countEmployees, accumSalaries);
+		printf("El promedio de todos los salarios es de: $ %.2f\n", promedy);
+		if(countEmployeesHigher == 1)
+		{
+			printf("Hay %d empleado que supera el salario promedio.\n\n", countEmployeesHigher);
+		}
+		else if(countEmployeesHigher < 1)
+		{
+			printf("No hay empleados que superen el salario promedio.\n\n");
+		}
+		else
+		{
+			printf("Hay %d empleados que superan el salario promedio.\n\n", countEmployeesHigher);
+		}
+		system("pause");
+
+	}
+
+
+	return isOk;
+}
+
 
 
