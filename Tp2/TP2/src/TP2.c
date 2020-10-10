@@ -38,7 +38,7 @@ int main(void) {
 
 	initEmployees(list,TAM);
 
-	//hardCodearEmpleados(list,TAM);
+	hardCodearEmpleados(list,TAM);
 
 	do{
 		system("cls");

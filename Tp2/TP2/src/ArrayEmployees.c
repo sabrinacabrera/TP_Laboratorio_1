@@ -409,17 +409,35 @@ void menuSectores()
 	    printf("5. Compras\n\n");
 	}
 
-int get_sector(eSector* list,int tamsec,int id,char* desc)
+
+
+
+int get_Data(eEmployee list[], int tam, int* nextId, char nombre[], char apellido[], float* salario, int* sector, int* index)
 {
-	int itsOK=0;
-	for(int i=0; i<tamsec;i++)
+	int id = *nextId;
+	int newId = id + 1;
+	int isOk = -1;
+
+	if(list != NULL && tam > 0 && nextId != NULL && nombre != NULL && apellido != NULL && salario != NULL && sector != NULL)
 	{
-		if(list[i].idSector == id)
+		*index = lookEmpty(list, tam);
+
+		if(index < 0) //si lookEmpty devolvio -1
 		{
-			strcpy(desc,list[i].nombreSector);
-			itsOK=1;
-			break;
+			printf("El sistema esta lleno.\n");
+		}
+		else
+		{
+			utn_getCadena(nombre, 51, 3, "Ingrese nombre: \n", "ERROR,El nombre ingresado es invalido.\n");
+			utn_getCadena(apellido, 51, 3, "Ingrese apellido: \n ", "ERROR,El apellido ingresado es invalido.\n");
+			utn_getFlotante(salario, 3, "Ingrese salario:\n ", "ERROR,El salario ingresado no es valido.\n", 20000.00, 500000.00);
+			menuSectores();
+			utn_getEntero(sector, 3, "Ingrese sector: \n", "ERROR,El sector ingresado no es valido.\n", 1, 5);
+
+			*nextId = newId;
+
+			isOk = 0;
 		}
 	}
-	return itsOK;
+	return isOk;
 }
