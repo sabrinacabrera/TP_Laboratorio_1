@@ -1,7 +1,13 @@
+/*
+ * utn.c
+ *
+ *  Created on: 20 dic. 2020
+ *      Author: gisel
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "cabrera.h"
+#include "utn.h"
 
     int suma_s(int numUno,int numDos)
     {

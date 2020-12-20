@@ -10,10 +10,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "cabrera.h"
+#include "utn.h"
 
 int main()
 {
+	setbuf(stdout,NULL);
+
     int opcion;
     int numUno;
     int numDos;
@@ -21,7 +23,7 @@ int main()
     int flagB=0;
     int flagOp3=0;
     int flagOp4=0;
-    setbuf(stdout,NULL);
+
     do
     {
         system("cls");
@@ -60,11 +62,11 @@ int main()
             printf("e)Calcular factorial (A!) y (B!)\n");
             break;
           case 1:
-            printf("a)Calcular suma (%d+%d)\n",numUno,numDos);
-            printf("b)calcular resta (%d-%d)\n",numUno,numDos);
-            printf("c)Calcular division (%d/%d)\n",numUno,numDos);
-            printf("d)Calcular multiplicacion(%d*%d)\n",numUno,numDos);
-            printf("e)Calcular factorial (%d!) y (%d!)\n",numUno,numDos);
+            printf("a)Calculada suma (%d+%d)\n",numUno,numDos);
+            printf("b)Calculada resta (%d-%d)\n",numUno,numDos);
+            printf("c)Calculada division (%d/%d)\n",numUno,numDos);
+            printf("d)Calculada multiplicacion(%d*%d)\n",numUno,numDos);
+            printf("e)Calculada factorial (%d!) y (%d!)\n",numUno,numDos);
             break;
           case 2:
               printf("Debe ingresar B=Y.\n");
@@ -132,7 +134,6 @@ int main()
             scanf("%d",&opcion);
        /*
        Este switch cambia el estado de las banderas segun las opciones elegidas
-
        */
         switch(opcion)
         {
@@ -207,6 +208,3 @@ int main()
 
     return 0;
 }
-
-
-

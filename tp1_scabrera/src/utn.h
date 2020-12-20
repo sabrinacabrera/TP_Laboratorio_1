@@ -1,7 +1,14 @@
+/*
+ * utn.h
+ *
+ *  Created on: 20 dic. 2020
+ *      Author: gisel
+ */
 
+#ifndef UTN_H_
+#define UTN_H_
 
-
-    /** \brief funcion sumar de A+b
+ /** \brief funcion sumar de A+b
      *
      * \param toma primer numero
      * \param  toma segundo numero
@@ -49,3 +56,4 @@
  */
      int factorial_A(int numUno);
 
+#endif /* UTN_H_ */
